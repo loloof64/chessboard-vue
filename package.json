@@ -1,7 +1,8 @@
 {
   "name": "chessboard-vue",
   "private": false,
-  "files": ["dist", "src/components/"],
+  "version": "0.1.0",
+  "files": ["dist"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/loloof64/chessboard-vue.git"
@@ -27,7 +28,6 @@
       "require": "./dist/style.css"
     }
   },
-  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
