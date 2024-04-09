@@ -1,12 +1,13 @@
 {
   "name": "chessboard-vue",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "files": ["dist"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/loloof64/chessboard-vue.git"
   },
+  "license":"MIT",
   "keywords": [
     "chess",
     "board",
