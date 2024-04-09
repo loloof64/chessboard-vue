@@ -1,0 +1,52 @@
+{
+  "name": "chessboard-vue",
+  "private": false,
+  "files": ["dist", "src/components/"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loloof64/chessboard-vue.git"
+  },
+  "keywords": [
+    "chess",
+    "board",
+    "component",
+    "vue3",
+    "vue",
+    "vuejs"
+  ],
+  "main": "./dist/chessboard-vue.umd.cjs",
+  "module": "./dist/chessboard-vue.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/chessboard-vue.js",
+      "require": "./dist/chessboard-vue.umd.cjs"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.6",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "path": "^0.12.7",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.1",
+    "vue-tsc": "^2.0.11"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  }
+}
