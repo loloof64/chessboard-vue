@@ -1,12 +1,12 @@
 import { getPieceAt, cellAlgebraic } from "./PiecesTest";
 import { Chess } from "chess.js";
 
-interface Cell {
+export interface Cell {
   file: number;
   rank: number;
 }
 
-interface DndPieceData {
+export interface DndPieceData {
   originCell: Cell;
   targetCell: Cell;
 }

@@ -173,7 +173,11 @@
         </p>
         <div v-else />
       </template>
-      <div />
+      <div class="player-turn-cell">
+      <div
+        class="player-turn" :class="logic.turn() === 'w' ? 'white-turn' : 'black-turn'"
+      />
+    </div>
       <!-- bottom coordinates -->
     </div>
   </div>
@@ -230,6 +234,8 @@ import {
     isBlackRookDragged,
     isBlackQueenDragged,
     isBlackKingDragged,
+    Cell,
+    DndPieceData,
   } from "./util/DragAndDrop.js";
 
 const emptyPosition = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
@@ -264,6 +270,7 @@ const props = withDefaults(
 
 const targetFile = ref<number | undefined>();
 const targetRank = ref<number | undefined>();
+const dndPieceData = ref<DndPieceData | undefined>();
 
 const cellsSize = computed<number>(() => props.size / 9.0);
 const halfCellsSize = computed<number>(() => cellsSize.value * 0.5);
