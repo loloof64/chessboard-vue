@@ -26,7 +26,133 @@
           <div
             class="cell"
             :class="(rank + file) % 2 !== 0 ? 'white' : 'black'"
-          ></div>
+          >
+          <div
+          v-if="isDnDOriginCell(dndPieceData, file, rank)"
+          :class="(targetFile !== file || targetRank !== rank) ? 'dnd-orig' : 'dnd-target'">
+
+          </div>
+            <WP
+              v-else-if="isWhitePawnAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <WN
+              v-else-if="isWhiteKnightAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <WB
+              v-else-if="isWhiteBishopAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <WR
+              v-else-if="isWhiteRookAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <WQ
+              v-else-if="isWhiteQueenAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <WK
+              v-else-if="isWhiteKingAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BP
+              v-else-if="isBlackPawnAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BN
+              v-else-if="isBlackKnightAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BB
+              v-else-if="isBlackBishopAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BR
+              v-else-if="isBlackRookAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BQ
+              v-else-if="isBlackQueenAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+            <BK
+              v-else-if="isBlackKingAtCell(logic, file, rank)"
+              :class="
+                targetFile === file && targetRank === rank
+                  ? 'dnd-target'
+                  : targetFile === file || targetRank === rank
+                  ? 'dnd-cross-cell'
+                  : 'no-highlight-cell'
+              "
+            />
+          </div>
         </template>
         <!-- cells -->
 
@@ -56,6 +182,59 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 
+import { Chess } from "chess.js";
+import BP from "./pieces/BP.vue";
+import BN from "./pieces/BN.vue";
+import BB from "./pieces/BB.vue";
+import BR from "./pieces/BR.vue";
+import BQ from "./pieces/BQ.vue";
+import BK from "./pieces/BK.vue";
+import WP from "./pieces/WP.vue";
+import WN from "./pieces/WN.vue";
+import WB from "./pieces/WB.vue";
+import WR from "./pieces/WR.vue";
+import WQ from "./pieces/WQ.vue";
+import WK from "./pieces/WK.vue";
+
+import {
+  cellAlgebraic,
+  isWhitePawnAtCell,
+  isWhiteKnightAtCell,
+  isWhiteBishopAtCell,
+  isWhiteRookAtCell,
+  isWhiteQueenAtCell,
+  isWhiteKingAtCell,
+  isBlackPawnAtCell,
+  isBlackKnightAtCell,
+  isBlackBishopAtCell,
+  isBlackRookAtCell,
+  isBlackQueenAtCell,
+  isBlackKingAtCell,
+} from "./util/PiecesTest.ts";
+
+import {
+    handleMouseDown,
+    handleMouseExited,
+    handleMouseMove,
+    handleMouseUp,
+    isDnDOriginCell,
+    isWhitePawnDragged,
+    isWhiteKnightDragged,
+    isWhiteBishopDragged,
+    isWhiteRookDragged,
+    isWhiteQueenDragged,
+    isWhiteKingDragged,
+    isBlackPawnDragged,
+    isBlackKnightDragged,
+    isBlackBishopDragged,
+    isBlackRookDragged,
+    isBlackQueenDragged,
+    isBlackKingDragged,
+  } from "./util/DragAndDrop.js";
+
+const emptyPosition = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
+let logic = new Chess(emptyPosition);
+
 const props = withDefaults(
   defineProps<{
     size?: number;
@@ -65,6 +244,9 @@ const props = withDefaults(
     coordinatesColor?: string;
     whiteCellsColor?: string;
     blackCellsColor?: string;
+    originCellColor?: string;
+    targetCellColor?: string;
+    dndCrossCellColor?: string;
   }>(),
   {
     size: 100,
@@ -74,15 +256,22 @@ const props = withDefaults(
     coordinatesColor: "yellow",
     whiteCellsColor: "navajowhite",
     blackCellsColor: "peru",
+    originCellColor: "crimson",
+    targetCellColor: "ForestGreen",
+    dndCrossCellColor: "DimGrey",
   }
 );
+
+const targetFile = ref<number | undefined>();
+const targetRank = ref<number | undefined>();
 
 const cellsSize = computed<number>(() => props.size / 9.0);
 const halfCellsSize = computed<number>(() => cellsSize.value * 0.5);
 
 const fontSize = computed<string>(() => `${cellsSize.value * 0.3}px`);
 
-const globalSize = computed<string>(() => `${props.size}px`);
+const globalSizePx = computed<string>(() => `${props.size}px`);
+const cellsSizePx = computed<string>(() => `${cellsSize.value}px`);
 const gridTemplate = computed<string>(
   () =>
     `${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px / ${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px`
@@ -102,8 +291,8 @@ const rankIndexes = computed<Array<number>>(() =>
 .root {
   position: relative;
   display: inline-block;
-  width: v-bind(globalSize);
-  height: v-bind(globalSize);
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
   background-color: v-bind(background);
 }
 
@@ -112,8 +301,8 @@ const rankIndexes = computed<Array<number>>(() =>
   display: grid;
   left: 0;
   top: 0;
-  width: v-bind(globalSize);
-  height: v-bind(globalSize);
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
   grid-template: v-bind(gridTemplate);
 }
 
@@ -213,5 +402,28 @@ const rankIndexes = computed<Array<number>>(() =>
 
 .black-turn {
   background-color: black;
+}
+
+.dnd-orig {
+  background-color: v-bind(originCellColor);
+  width: v-bind(cellsSizePx);
+  height: v-bind(cellsSizePx);
+}
+
+.dnd-target {
+  background-color: v-bind(targetCellColor);
+  width: v-bind(cellsSizePx);
+  height: v-bind(cellsSizePx);
+}
+
+.dnd-cross-cell {
+  background-color: v-bind(dndCrossCellColor);
+  width: v-bind(cellsSizePx);
+  height: v-bind(cellsSizePx);
+}
+
+.no-highlight-cell {
+  width: v-bind(cellsSizePx);
+  height: v-bind(cellsSizePx);
 }
 </style>

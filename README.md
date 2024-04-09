@@ -24,3 +24,9 @@ createApp(App)
 
 1. Install dependencies : e.g with bun `bun install`
 2. Build : e.g with bun `bun run vue-tsc && bun run vite build`
+
+## Credits
+
+Pieces vectors definitions from CBurnett and found on [Wikimedia commons](https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces).
+
+Using [ChessJS library](https://github.com/jhlywa/chess.js), which is bundled in the produced script.
