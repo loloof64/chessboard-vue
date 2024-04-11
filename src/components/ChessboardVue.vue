@@ -763,6 +763,8 @@ defineExpose({
   position: absolute;
   left: v-bind(dndX);
   top: v-bind(dndY);
+  width: v-bind(cellsSizePx);
+  height: v-bind(cellsSizePx);
 }
 
 .last-move-line {

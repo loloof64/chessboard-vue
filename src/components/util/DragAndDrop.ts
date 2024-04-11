@@ -96,16 +96,17 @@ export function handleMouseMove(
   if (promotionPending) return;
   if (!playerHuman) return;
 
+  
   const [x, y] = getLocalCoordinates(event, rootElement);
   const [file, rank] = getCell(x, y, cellsSize, reversed);
-
+  
   const thisComponentLocation = rootElement.getBoundingClientRect();
   const inBounds =
-    x >= 0 &&
-    x <= thisComponentLocation.width &&
-    y >= 0 &&
-    y <= thisComponentLocation.height;
-
+  x >= 0 &&
+  x <= thisComponentLocation.width &&
+  y >= 0 &&
+  y <= thisComponentLocation.height;
+  
   if (!inBounds) {
     cancelDnd();
     return;
