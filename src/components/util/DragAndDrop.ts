@@ -143,7 +143,8 @@ export function handleMouseUp(
   handleGameEndedStatus: () => void,
   updateWaitingForExternalMove: () => void,
   waitingForExternalMove: boolean,
-  playerHuman: boolean
+  playerHuman: boolean,
+  updatePlayerHuman: () => void,
 ) {
   if (!rootElement) return;
   if (!gameInProgress) return;
@@ -236,6 +237,8 @@ export function handleMouseUp(
     logicBeforeMove,
     logic
   );
+
+  updatePlayerHuman();
 
   updateWaitingForExternalMove();
 }

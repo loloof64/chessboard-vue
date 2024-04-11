@@ -857,7 +857,8 @@ function reactToMouseUp(e: MouseEvent) {
     handleGameEndedStatus,
     updateWaitingForExternalMove,
     waitingForExternalMove.value,
-    playerHuman.value
+    playerHuman.value,
+    updatePlayerHuman,
   );
 }
 
