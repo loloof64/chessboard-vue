@@ -369,8 +369,6 @@ function update() {
   updater.value = Math.random();
 }
 
-const targetFile = ref<number>(-Infinity);
-const targetRank = ref<number>(-Infinity);
 const dndPieceData = ref<DndPieceData>({
   piece: "",
   originCell: {
@@ -480,8 +478,6 @@ function cancelDnd() {
     },
   };
   dndLocation.value = { x: -Infinity, y: -Infinity };
-  targetFile.value = -Infinity;
-  targetRank.value = -Infinity;
 }
 
 function updatePlayerHuman() {
@@ -573,8 +569,8 @@ function updateDndLocation(x: number, y: number, file: number, rank: number) {
     y,
   };
 
-  targetFile.value = file;
-  targetRank.value = rank;
+  dndPieceData.value.targetCell.file = file;
+  dndPieceData.value.targetCell.rank = rank;
 }
 
 function setPromotionPending(
