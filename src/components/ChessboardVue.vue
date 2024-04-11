@@ -1,4 +1,5 @@
 <template>
+  <input type="hidden" :value="updater" />
   <div class="root" ref="rootElement">
     <div class="lowest-layer">
       <!-- upper coordinates -->
@@ -27,13 +28,8 @@
             class="cell"
             :class="(rank + file) % 2 !== 0 ? 'white' : 'black'"
           >
-          <div
-          v-if="isDnDOriginCell(dndPieceData, file, rank)"
-          :class="(targetFile !== file || targetRank !== rank) ? 'dnd-orig' : 'dnd-target'">
-
-          </div>
             <WP
-              v-else-if="isWhitePawnAtCell(logic, file, rank)"
+              v-if="isWhitePawnAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -43,7 +39,7 @@
               "
             />
             <WN
-              v-else-if="isWhiteKnightAtCell(logic, file, rank)"
+              v-else-if="isWhiteKnightAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -53,7 +49,7 @@
               "
             />
             <WB
-              v-else-if="isWhiteBishopAtCell(logic, file, rank)"
+              v-else-if="isWhiteBishopAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -63,7 +59,7 @@
               "
             />
             <WR
-              v-else-if="isWhiteRookAtCell(logic, file, rank)"
+              v-else-if="isWhiteRookAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -73,7 +69,7 @@
               "
             />
             <WQ
-              v-else-if="isWhiteQueenAtCell(logic, file, rank)"
+              v-else-if="isWhiteQueenAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -83,7 +79,7 @@
               "
             />
             <WK
-              v-else-if="isWhiteKingAtCell(logic, file, rank)"
+              v-else-if="isWhiteKingAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -93,7 +89,7 @@
               "
             />
             <BP
-              v-else-if="isBlackPawnAtCell(logic, file, rank)"
+              v-else-if="isBlackPawnAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -103,7 +99,7 @@
               "
             />
             <BN
-              v-else-if="isBlackKnightAtCell(logic, file, rank)"
+              v-else-if="isBlackKnightAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -113,7 +109,7 @@
               "
             />
             <BB
-              v-else-if="isBlackBishopAtCell(logic, file, rank)"
+              v-else-if="isBlackBishopAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -123,7 +119,7 @@
               "
             />
             <BR
-              v-else-if="isBlackRookAtCell(logic, file, rank)"
+              v-else-if="isBlackRookAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -133,7 +129,7 @@
               "
             />
             <BQ
-              v-else-if="isBlackQueenAtCell(logic, file, rank)"
+              v-else-if="isBlackQueenAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -143,7 +139,7 @@
               "
             />
             <BK
-              v-else-if="isBlackKingAtCell(logic, file, rank)"
+              v-else-if="isBlackKingAtCell(currentPosition, file, rank)"
               :class="
                 targetFile === file && targetRank === rank
                   ? 'dnd-target'
@@ -184,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onUpdated } from "vue";
 
 import { Chess } from "chess.js";
 import BP from "./pieces/BP.vue";
@@ -214,7 +210,7 @@ import {
   isBlackRookAtCell,
   isBlackQueenAtCell,
   isBlackKingAtCell,
-} from "./util/PiecesTest.ts";
+} from "./util/PiecesTest.js";
 
 import {
     handleMouseDown,
@@ -239,7 +235,11 @@ import {
   } from "./util/DragAndDrop.js";
 
 const emptyPosition = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
+const standardPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 let logic = new Chess(emptyPosition);
+
+const updater = ref(Math.random())
+const currentPosition = ref(logic.fen());
 
 const props = withDefaults(
   defineProps<{
@@ -268,6 +268,10 @@ const props = withDefaults(
   }
 );
 
+function update() {
+  updater.value = Math.random();
+}
+
 const targetFile = ref<number | undefined>();
 const targetRank = ref<number | undefined>();
 const dndPieceData = ref<DndPieceData | undefined>();
@@ -292,6 +296,19 @@ const fileIndexes = computed<Array<number>>(() =>
 const rankIndexes = computed<Array<number>>(() =>
   props.reversed ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
 );
+
+function newGame(startPosition:string|undefined = standardPosition) {
+  logic = new Chess(startPosition);
+  update();
+}
+
+onUpdated(() => {
+  currentPosition.value = logic.fen();
+});
+
+defineExpose({
+  newGame,
+})
 </script>
 
 <style scoped>

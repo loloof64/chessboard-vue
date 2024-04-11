@@ -1,80 +1,159 @@
 export function cellAlgebraic(file: number, rank: number) {
-    return `${String.fromCharCode('a'.charCodeAt(0) + file)}${String.fromCharCode('1'.charCodeAt(0) + rank)}`;
+  return `${String.fromCharCode("a".charCodeAt(0) + file)}${String.fromCharCode(
+    "1".charCodeAt(0) + rank
+  )}`;
 }
 
-export function getPieceAt(chessLogic: any, file: number, rank: number) {
-    const pieceValue = chessLogic.get(cellAlgebraic(file, rank));
-    return pieceValue;
+export function getPieceAt(
+  positionFen: string,
+  file: number,
+  rank: number
+): string | undefined {
+  const piecesPart = positionFen.split(" ")[0];
+  const lines = piecesPart.split("/");
+  const values = lines.map(piecesLineToArray).toReversed();
+  const pieceValue = values[rank][file];
+  return pieceValue;
 }
 
-export function isWhitePawnAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'p' && piece.color === 'w';
+function isDigit(elem: string) {
+  const asciiCode = elem.charCodeAt(0);
+  const _0Code = "0".charCodeAt(0);
+  const _9Code = "9".charCodeAt(0);
+  return asciiCode >= _0Code && asciiCode <= _9Code;
 }
 
-export function isWhiteKnightAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'n' && piece.color === 'w';
+function holesArray(countString: string): string[] {
+  const count = parseInt(countString);
+  let result = [];
+  for (let i = 0; i < count; i++) {
+    result.push("");
+  }
+  return result;
 }
 
-export function isWhiteBishopAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'b' && piece.color === 'w';
+function piecesLineToArray(piecesLine: string): string[] {
+  return piecesLine.split("").flatMap((elem) => {
+    return isDigit(elem) ? holesArray(elem) : elem;
+  });
 }
 
-export function isWhiteRookAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'r' && piece.color === 'w';
+export function isWhitePawnAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "P";
 }
 
-export function isWhiteQueenAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'q' && piece.color === 'w';
+export function isWhiteKnightAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "N";
 }
 
-export function isWhiteKingAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'k' && piece.color === 'w';
+export function isWhiteBishopAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "B";
 }
 
-export function isBlackPawnAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'p' && piece.color === 'b';
+export function isWhiteRookAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "R";
 }
 
-export function isBlackKnightAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'n' && piece.color === 'b';
+export function isWhiteQueenAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "Q";
 }
 
-export function isBlackBishopAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'b' && piece.color === 'b';
+export function isWhiteKingAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "K";
 }
 
-export function isBlackRookAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'r' && piece.color === 'b';
+export function isBlackPawnAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "p";
 }
 
-export function isBlackQueenAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'q' && piece.color === 'b';
+export function isBlackKnightAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "n";
 }
 
-export function isBlackKingAtCell(chessLogic: any, file: number, rank: number) {
-    const piece = getPieceAt(chessLogic, file, rank);
-    if ([null, undefined].includes(piece)) return false;
-    return piece.type === 'k' && piece.color === 'b';
+export function isBlackBishopAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "b";
+}
+
+export function isBlackRookAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "r";
+}
+
+export function isBlackQueenAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "q";
+}
+
+export function isBlackKingAtCell(
+  positionFen: string,
+  file: number,
+  rank: number
+) {
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return false;
+  return piece === "k";
 }
