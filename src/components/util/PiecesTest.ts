@@ -8,7 +8,7 @@ export function getPieceAt(
   positionFen: string,
   file: number,
   rank: number
-): string | undefined {
+): string {
   const piecesPart = positionFen.split(" ")[0];
   const lines = piecesPart.split("/");
   const values = lines.map(piecesLineToArray).toReversed();

@@ -7,8 +7,14 @@ export interface Cell {
 }
 
 export interface DndPieceData {
+  piece: string;
   originCell: Cell;
   targetCell: Cell;
+}
+
+export interface DndLocation {
+  x: number;
+  y: number;
 }
 
 function getCell(x: number, y: number, cellsSize: number, reversed: boolean) {
@@ -22,7 +28,7 @@ function getCell(x: number, y: number, cellsSize: number, reversed: boolean) {
 }
 
 function getLocalCoordinates(
-  event: any,
+  event: MouseEvent,
   rootElement: HTMLElement
 ): Array<number> {
   if (!rootElement) return [];
@@ -35,39 +41,46 @@ function getLocalCoordinates(
 }
 
 export function handleMouseDown(
-  event: any,
+  event: MouseEvent,
   cellsSize: number,
   reversed: boolean,
-  rootElement: HTMLElement,
-  logic: any,
-  setupDnd: Function,
+  rootElement: HTMLElement | undefined,
+  positionFen: string,
+  setupDnd: (
+    x: number,
+    y: number,
+    file: number,
+    rank: number,
+    piece: string
+  ) => void,
   gameInProgress: boolean,
   waitingForExternalMove: boolean,
   playerHuman: boolean
 ) {
+  if (!rootElement) return;
   if (!gameInProgress) return;
   if (waitingForExternalMove) return;
   if (!playerHuman) return;
   const [x, y] = getLocalCoordinates(event, rootElement);
   const [file, rank] = getCell(x, y, cellsSize, reversed);
 
-  const piece = getPieceAt(logic, file, rank);
-  if ([null, undefined].includes(piece)) return;
+  const piece = getPieceAt(positionFen, file, rank);
+  if (piece === undefined) return;
 
-  const isWhiteTurn = logic.turn() === "w";
-  const isWhitePiece = piece.color === "w";
+  const isWhiteTurn = positionFen.split(" ")[1] === "w";
+  const isWhitePiece = "PNRBQK".includes(piece);
   const isNotPieceOfCurrentPlayerInTurn = isWhiteTurn !== isWhitePiece;
 
   if (isNotPieceOfCurrentPlayerInTurn) return;
 
-  setupDnd({ x, y, file, rank, piece });
+  setupDnd(x, y, file, rank, piece);
 }
 
 export function handleMouseMove(
-  event: any,
-  dragAndDropInProgress: false,
-  updateDndLocation: Function,
-  rootElement: HTMLElement,
+  event: MouseEvent,
+  dragAndDropInProgress: boolean,
+  updateDndLocation: (x: number, y: number, file: number, rank: number) => void,
+  rootElement: HTMLElement | undefined,
   cancelDnd: Function,
   cellsSize: number,
   reversed: boolean,
@@ -76,6 +89,7 @@ export function handleMouseMove(
   waitingForExternalMove: boolean,
   playerHuman: boolean
 ) {
+  if (!rootElement) return;
   if (!gameInProgress) return;
   if (waitingForExternalMove) return;
   if (!dragAndDropInProgress) return;
@@ -101,24 +115,37 @@ export function handleMouseMove(
 }
 
 export function handleMouseUp(
-  event: any,
+  event: MouseEvent,
   cellsSize: number,
   reversed: boolean,
-  rootElement: HTMLElement,
-  logic: any,
+  rootElement: HTMLElement | undefined,
+  logic: Chess,
   dragAndDropInProgress: boolean,
   dndPieceData: DndPieceData,
-  cancelDnd: Function,
-  updateLogic: Function,
-  updateAndEmitLastMove: Function,
+  cancelDnd: () => void,
+  updateLogic: () => void,
+  updateAndEmitLastMove: (
+    startFile: number,
+    startRank: number,
+    endFile: number,
+    endRank: number,
+    logicBeforeMove: Chess,
+    logicAfterMove: Chess
+  ) => void,
   promotionPending: boolean,
-  setPromotionPending: Function,
+  setPromotionPending: (
+    startFile: number,
+    startRank: number,
+    endFile: number,
+    endRank: number
+  ) => void,
   gameInProgress: boolean,
-  handleGameEndedStatus: Function,
-  updateWaitingForExternalMove: Function,
+  handleGameEndedStatus: () => void,
+  updateWaitingForExternalMove: () => void,
   waitingForExternalMove: boolean,
   playerHuman: boolean
 ) {
+  if (!rootElement) return;
   if (!gameInProgress) return;
   if (waitingForExternalMove) return;
   if (!dragAndDropInProgress) return;
@@ -159,22 +186,15 @@ export function handleMouseUp(
     isPromotion = true;
   }
 
-  const pieceAtOriginCell = logic.get(
-    cellAlgebraic(originCell.file, originCell.rank)
-  );
-  const isPawnMoving = pieceAtOriginCell && pieceAtOriginCell.type === "p";
+  const pieceAtOriginCell = getPieceAt(logic.fen(), file, rank);
+  const isPawnMoving = ["P", "p"].includes(pieceAtOriginCell);
   const targetOnFirstOrLastRank = rank === 0 || rank === 7;
 
   const isPromotionMove =
     isPromotion && isPawnMoving && targetOnFirstOrLastRank;
 
   if (isPromotionMove) {
-    setPromotionPending({
-      startFile: originCell.file,
-      startRank: originCell.rank,
-      endFile: file,
-      endRank: rank,
-    });
+    setPromotionPending(originCell.file, originCell.rank, file, rank);
     return;
   }
 
@@ -186,9 +206,9 @@ export function handleMouseUp(
   );
 
   const logicBeforeMove = new Chess(logic.fen());
-  const result = logic.move(moveObject);
-
-  if ([null, undefined].includes(result)) {
+  try {
+    logic.move(moveObject);
+  } catch (ex: any) {
     cancelDnd();
     return;
   }
@@ -198,25 +218,25 @@ export function handleMouseUp(
 
   handleGameEndedStatus();
 
-  updateAndEmitLastMove({
-    startFile: originCell.file,
-    startRank: originCell.rank,
-    endFile: file,
-    endRank: rank,
+  updateAndEmitLastMove(
+    originCell.file,
+    originCell.rank,
+    file,
+    rank,
     logicBeforeMove,
-    logicAfterMove: logic,
-  });
+    logic
+  );
 
   updateWaitingForExternalMove();
 }
 
 export function handleMouseExited(
-  event: any,
-  cancelDnd: Function,
-  promotionPending: false,
-  gameInProgress: false,
-  waitingForExternalMove: false,
-  playerHuman: false
+  event: MouseEvent,
+  cancelDnd: () => void,
+  promotionPending: boolean,
+  gameInProgress: boolean,
+  waitingForExternalMove: boolean,
+  playerHuman: boolean
 ) {
   if (!gameInProgress) return;
   if (waitingForExternalMove) return;
@@ -242,71 +262,77 @@ function buildMoveObject(
   };
 }
 
-export function isDnDOriginCell(file: number, rank: number, dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return undefined;
-
+export function isDnDOriginCell(
+  file: number,
+  rank: number,
+  dndPieceData: DndPieceData
+) {
   const originCell = dndPieceData.originCell;
-  if ([undefined, null].includes(originCell)) return undefined;
-
   return originCell.file === file && originCell.rank === rank;
 }
 
-export function isWhitePawnDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "p" && dndPieceData.color === "w";
+export function isDnDTargetCell(
+  file: number,
+  rank: number,
+  dndPieceData: DndPieceData
+) {
+  const targetCell = dndPieceData.targetCell;
+  return targetCell.file === file && targetCell.rank === rank;
 }
 
-export function isWhiteKnightDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "n" && dndPieceData.color === "w";
+export function isDnDCrossCell(
+  file: number,
+  rank: number,
+  dndPieceData: DndPieceData
+) {
+  const targetCell = dndPieceData.targetCell;
+  return targetCell.file === file || targetCell.rank === rank;
 }
 
-export function isWhiteBishopDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "b" && dndPieceData.color === "w";
+export function isWhitePawnDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "P";
 }
 
-export function isWhiteRookDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "r" && dndPieceData.color === "w";
+export function isWhiteKnightDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "N";
 }
 
-export function isWhiteQueenDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "q" && dndPieceData.color === "w";
+export function isWhiteBishopDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "B";
 }
 
-export function isWhiteKingDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "k" && dndPieceData.color === "w";
+export function isWhiteRookDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "R";
 }
 
-export function isBlackPawnDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "p" && dndPieceData.color === "b";
+export function isWhiteQueenDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "Q";
 }
 
-export function isBlackKnightDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "n" && dndPieceData.color === "b";
+export function isWhiteKingDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "K";
 }
 
-export function isBlackBishopDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "b" && dndPieceData.color === "b";
+export function isBlackPawnDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "p";
 }
 
-export function isBlackRookDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "r" && dndPieceData.color === "b";
+export function isBlackKnightDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "n";
 }
 
-export function isBlackQueenDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "q" && dndPieceData.color === "b";
+export function isBlackBishopDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "b";
 }
 
-export function isBlackKingDragged(dndPieceData: any) {
-  if ([undefined, null].includes(dndPieceData)) return false;
-  return dndPieceData.type === "k" && dndPieceData.color === "b";
+export function isBlackRookDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "r";
+}
+
+export function isBlackQueenDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "q";
+}
+
+export function isBlackKingDragged(dndPieceData: DndPieceData) {
+  return dndPieceData.piece === "k";
 }
