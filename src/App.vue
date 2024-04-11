@@ -2,11 +2,10 @@
 import { ref } from "vue";
 import ChessboardVue from "./components/ChessboardVue.vue";
 const board = ref();
-const board2 = ref();
+const reversed = ref<boolean>(false);
 
 function newGameHandler() {
   board.value.newGame();
-  board2.value.newGame();
 }
 
 function handleCheckmate(byWhite: boolean) {
@@ -16,16 +15,24 @@ function handleCheckmate(byWhite: boolean) {
     alert("Black won by checkmate");
   }
 }
+
+function reverseBoard() {
+  reversed.value = !reversed.value;
+}
 </script>
 
 <template>
   <h2>Chessboard test</h2>
   <div>
     <button @click="newGameHandler">New game</button>
+    <button @click="reverseBoard">Reverse side</button>
   </div>
-  <ChessboardVue :size="500" ref="board" @checkmate="handleCheckmate" />
-  ||
-  <ChessboardVue :size="500" ref="board2" reversed />
+  <ChessboardVue
+    :size="500"
+    ref="board"
+    @checkmate="handleCheckmate"
+    :reversed="reversed"
+  />
 </template>
 
 <style scoped></style>

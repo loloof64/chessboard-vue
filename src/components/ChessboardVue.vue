@@ -212,13 +212,19 @@
 
       <!-- drag and drop layer -->
       <div class="dnd-layer">
-        <WP v-if="isWhitePawnDragged(dndPieceData)" class="dndPiece" />
+        <WP
+          v-if="isWhitePawnDragged(dndPieceData) && !promotionPending"
+          class="dndPiece"
+        />
         <WN v-else-if="isWhiteKnightDragged(dndPieceData)" class="dndPiece" />
         <WB v-else-if="isWhiteBishopDragged(dndPieceData)" class="dndPiece" />
         <WR v-else-if="isWhiteRookDragged(dndPieceData)" class="dndPiece" />
         <WQ v-else-if="isWhiteQueenDragged(dndPieceData)" class="dndPiece" />
         <WK v-else-if="isWhiteKingDragged(dndPieceData)" class="dndPiece" />
-        <BP v-else-if="isBlackPawnDragged(dndPieceData)" class="dndPiece" />
+        <BP
+          v-else-if="isBlackPawnDragged(dndPieceData) && !promotionPending"
+          class="dndPiece"
+        />
         <BN v-else-if="isBlackKnightDragged(dndPieceData)" class="dndPiece" />
         <BB v-else-if="isBlackBishopDragged(dndPieceData)" class="dndPiece" />
         <BR v-else-if="isBlackRookDragged(dndPieceData)" class="dndPiece" />
