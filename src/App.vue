@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ChessboardVue from './components/ChessboardVue.vue'
+import { ref } from "vue";
+import ChessboardVue from "./components/ChessboardVue.vue";
 const board = ref();
 const board2 = ref();
 
 function newGameHandler() {
   board.value.newGame();
   board2.value.newGame();
+}
+
+function handleCheckmate() {
+  if (board.value.isWhiteTurn()) {
+    alert("Black won by checkmate");
+  } else {
+    alert("White won by checkmate");
+  }
 }
 </script>
 
@@ -15,10 +23,9 @@ function newGameHandler() {
   <div>
     <button @click="newGameHandler">New game</button>
   </div>
-  <ChessboardVue :size="500" ref="board" />
+  <ChessboardVue :size="500" ref="board" @checkmate="handleCheckmate" />
   ||
-  <ChessboardVue :size="500" ref="board2" reversed/>
+  <ChessboardVue :size="500" ref="board2" reversed />
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

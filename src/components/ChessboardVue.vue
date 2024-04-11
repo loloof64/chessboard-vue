@@ -659,12 +659,17 @@ function reactToMouseExited(e: MouseEvent) {
   );
 }
 
+function isWhiteTurn() : boolean {
+  return logic.turn() === 'w';
+}
+
 onUpdated(() => {
   currentPosition.value = logic.fen();
 });
 
 defineExpose({
   newGame,
+  isWhiteTurn,
 });
 </script>
 
