@@ -630,8 +630,8 @@ function updatePlayerHuman() {
 
 function newGame(startPositionFen: string | undefined = standardPosition) {
   logic = new Chess(startPositionFen);
-  clearLastMoveArrow();
   update();
+  clearLastMoveArrow();
   startPosition.value = startPositionFen;
   promotionPending.value = false;
   cancelDnd();
@@ -878,6 +878,16 @@ function isWhiteTurn(): boolean {
 }
 
 function clearLastMoveArrow() {
+  lastMove.value = {
+    start: {
+      file: -Infinity,
+      rank: -Infinity,
+    },
+    end: {
+      file: -Infinity,
+      rank: -Infinity,
+    }
+  }
   lastMoveBaselineLeft.value = `0px`;
   lastMoveBaselineTop.value = `0px`;
   lastMoveBaselineWidth.value = `0px`;
@@ -897,7 +907,7 @@ function clearLastMoveArrow() {
   lastMoveArrow2Width.value = `0px`;
   lastMoveArrow2Height.value = `0px`;
   lastMoveArrow2Transform.value = `)`;
-  lastMoveArrow2TransformOrigin.value = `${halfThickness.value}px ${0}px`;
+  lastMoveArrow2TransformOrigin.value = `0px 0px`;
 
   lastMovePointLeft.value = `0px`;
   lastMovePointTop.value = `0px`;

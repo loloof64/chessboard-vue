@@ -32,6 +32,7 @@ function reverseBoard() {
     ref="board"
     @checkmate="handleCheckmate"
     :reversed="reversed"
+    :black-player-human="false"
   />
 </template>
 
