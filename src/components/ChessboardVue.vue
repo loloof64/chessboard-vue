@@ -259,6 +259,11 @@
               class="single-promotion-button"
               @click="() => commitPromotionMove('n')"
             />
+            <Cross
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => cancelPromotion()"
+            />
           </template>
           <template v-else>
             <BQ
@@ -280,6 +285,11 @@
               :size="cellsSize"
               class="single-promotion-button"
               @click="() => commitPromotionMove('n')"
+            />
+            <Cross
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => cancelPromotion()"
             />
           </template>
         </div>
@@ -306,6 +316,7 @@ import WB from "./pieces/WB.vue";
 import WR from "./pieces/WR.vue";
 import WQ from "./pieces/WQ.vue";
 import WK from "./pieces/WK.vue";
+import Cross from "./pieces/Cross.vue";
 
 import {
   isWhitePawnAtCell,
@@ -347,7 +358,6 @@ import {
   DndPieceData,
   DndLocation,
 } from "./util/DragAndDrop.js";
-import { cp } from "fs";
 
 interface Move {
   start: Cell;
@@ -734,6 +744,21 @@ function commitPromotionMove(type: string) {
 
   updatePlayerHuman();
   updateWaitingForExternalMove();
+}
+
+function cancelPromotion() {
+  promotionPending.value = false;
+  pendingPromotionMove.value = {
+    start: {
+      file: -Infinity,
+      rank: -Infinity,
+    },
+    end: {
+      file: -Infinity,
+      rank: -Infinity,
+    },
+  };
+  cancelDnd();
 }
 
 function reactToMouseDown(e: MouseEvent) {

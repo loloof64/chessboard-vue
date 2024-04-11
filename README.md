@@ -29,4 +29,6 @@ createApp(App)
 
 Pieces vectors definitions from CBurnett and found on [Wikimedia commons](https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces).
 
+Svg cross has been downloaded from [Svg repo](https://www.svgrepo.com/svg/80301/cross)
+
 Using [ChessJS library](https://github.com/jhlywa/chess.js), which is bundled in the produced script.
