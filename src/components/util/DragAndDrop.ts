@@ -96,17 +96,16 @@ export function handleMouseMove(
   if (promotionPending) return;
   if (!playerHuman) return;
 
-  
   const [x, y] = getLocalCoordinates(event, rootElement);
   const [file, rank] = getCell(x, y, cellsSize, reversed);
-  
+
   const thisComponentLocation = rootElement.getBoundingClientRect();
   const inBounds =
-  x >= 0 &&
-  x <= thisComponentLocation.width &&
-  y >= 0 &&
-  y <= thisComponentLocation.height;
-  
+    x >= 0 &&
+    x <= thisComponentLocation.width &&
+    y >= 0 &&
+    y <= thisComponentLocation.height;
+
   if (!inBounds) {
     cancelDnd();
     return;
@@ -173,31 +172,41 @@ export function handleMouseUp(
     return;
   }
 
+  // Is it a promotion move ? -----------------
+
+  const pieceAtOriginCell = getPieceAt(
+    logic.fen(),
+    dndPieceData.originCell.file,
+    dndPieceData.originCell.rank
+  );
+  const isPawnMoving = ["P", "p"].includes(pieceAtOriginCell);
+  const targetOnFirstOrLastRank = rank === 0 || rank === 7;
+
+  let isLegalMove;
+  const logicClone = new Chess(logic.fen());
+
   const testMoveObject = buildMoveObject(
     originCell.file,
     originCell.rank,
     file,
     rank
   );
-  const logicClone = new Chess(logic.fen());
-  let isPromotion = false;
   try {
     logicClone.move(testMoveObject);
+    isLegalMove = true;
   } catch (ex: any) {
-    isPromotion = true;
+    isLegalMove = false;
   }
 
-  const pieceAtOriginCell = getPieceAt(logic.fen(), file, rank);
-  const isPawnMoving = ["P", "p"].includes(pieceAtOriginCell);
-  const targetOnFirstOrLastRank = rank === 0 || rank === 7;
-
   const isPromotionMove =
-    isPromotion && isPawnMoving && targetOnFirstOrLastRank;
+    isLegalMove && isPawnMoving && targetOnFirstOrLastRank;
 
   if (isPromotionMove) {
     setPromotionPending(originCell.file, originCell.rank, file, rank);
     return;
   }
+
+  // ------------------------------
 
   const moveObject = buildMoveObject(
     originCell.file,

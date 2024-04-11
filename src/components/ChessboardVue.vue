@@ -1,231 +1,286 @@
 <template>
   <input type="hidden" :value="updater" />
-  <div
-    class="root"
-    ref="rootElement"
-    @mousedown="reactToMouseDown"
-    @mousemove="reactToMouseMove"
-    @mouseup="reactToMouseUp"
-    @mouseleave="reactToMouseExited"
-  >
-    <!-- lowest layer -->
-    <div class="lowest-layer">
-      <!-- upper coordinates -->
-      <div />
-      <template v-for="file in fileIndexes">
-        <p v-if="props.coordinatesVisible" class="coordinate">
-          {{ String.fromCharCode("A".charCodeAt(0) + file) }}
-        </p>
-        <div v-else />
-      </template>
-      <div />
-      <!-- upper coordinates -->
-
-      <!-- medium lines -->
-      <template v-for="rank in rankIndexes">
-        <!-- left coordinate -->
-        <p v-if="props.coordinatesVisible" class="coordinate">
-          {{ String.fromCharCode("1".charCodeAt(0) + rank) }}
-        </p>
-        <div v-else />
-        <!-- left coordinate-->
-
-        <!-- cells -->
+  <div class="root" ref="rootElement">
+    <!-- inner layer-->
+    <div
+      class="inner-layer"
+      @mousedown="reactToMouseDown"
+      @mousemove="reactToMouseMove"
+      @mouseup="reactToMouseUp"
+      @mouseleave="reactToMouseExited"
+    >
+      <!-- lowest layer -->
+      <div class="lowest-layer">
+        <!-- upper coordinates -->
+        <div />
         <template v-for="file in fileIndexes">
-          <div
-            class="cell"
-            :class="(rank + file) % 2 !== 0 ? 'white' : 'black'"
-          >
+          <p v-if="props.coordinatesVisible" class="coordinate">
+            {{ String.fromCharCode("A".charCodeAt(0) + file) }}
+          </p>
+          <div v-else />
+        </template>
+        <div />
+        <!-- upper coordinates -->
+
+        <!-- medium lines -->
+        <template v-for="rank in rankIndexes">
+          <!-- left coordinate -->
+          <p v-if="props.coordinatesVisible" class="coordinate">
+            {{ String.fromCharCode("1".charCodeAt(0) + rank) }}
+          </p>
+          <div v-else />
+          <!-- left coordinate-->
+
+          <!-- cells -->
+          <template v-for="file in fileIndexes">
             <div
-              v-if="isDnDOriginCell(file, rank, dndPieceData)"
-              class="dnd-orig"
-            />
-            <WP
-              v-else-if="isWhitePawnAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
-            />
-            <WN
-              v-else-if="isWhiteKnightAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
-            />
-            <WB
-              v-else-if="isWhiteBishopAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+              class="cell"
+              :class="(rank + file) % 2 !== 0 ? 'white' : 'black'"
+            >
+              <div
+                v-if="isDnDOriginCell(file, rank, dndPieceData)"
+                class="dnd-orig"
+              />
+              <WP
+                v-else-if="isWhitePawnAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <WN
+                v-else-if="isWhiteKnightAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <WB
+                v-else-if="isWhiteBishopAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <WR
+                v-else-if="isWhiteRookAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <WQ
+                v-else-if="isWhiteQueenAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <WK
+                v-else-if="isWhiteKingAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BP
+                v-else-if="isBlackPawnAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BN
+                v-else-if="isBlackKnightAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BB
+                v-else-if="isBlackBishopAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BR
+                v-else-if="isBlackRookAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BQ
+                v-else-if="isBlackQueenAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <BK
+                v-else-if="isBlackKingAtCell(currentPosition, file, rank)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+              <div
+                v-else-if="isDnDOriginCell(file, rank, dndPieceData)"
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-origin'
+                    : 'dnd-target'
+                "
+              />
+              <div
+                v-else
+                :class="
+                  isDnDTargetCell(file, rank, dndPieceData)
+                    ? 'dnd-target'
+                    : isDnDCrossCell(file, rank, dndPieceData)
+                    ? 'dnd-cross-cell'
+                    : 'no-highlight-cell'
+                "
+              />
+            </div>
+          </template>
+          <!-- cells -->
+
+          <!-- right coordinate -->
+          <p v-if="props.coordinatesVisible" class="coordinate">
+            {{ String.fromCharCode("1".charCodeAt(0) + rank) }}
+          </p>
+          <div v-else />
+          <!-- right coordinate-->
+        </template>
+        <!-- medium lines -->
+
+        <!-- bottom coordinates -->
+        <div />
+        <template v-for="file in fileIndexes">
+          <p v-if="props.coordinatesVisible" class="coordinate">
+            {{ String.fromCharCode("A".charCodeAt(0) + file) }}
+          </p>
+          <div v-else />
+        </template>
+        <div class="player-turn-cell">
+          <div
+            class="player-turn"
+            :class="logic.turn() === 'w' ? 'white-turn' : 'black-turn'"
+          />
+        </div>
+        <!-- bottom coordinates -->
+      </div>
+      <!-- lowest layer -->
+
+      <!-- drag and drop layer -->
+      <div class="dnd-layer">
+        <WP v-if="isWhitePawnDragged(dndPieceData)" class="dndPiece" />
+        <WN v-else-if="isWhiteKnightDragged(dndPieceData)" class="dndPiece" />
+        <WB v-else-if="isWhiteBishopDragged(dndPieceData)" class="dndPiece" />
+        <WR v-else-if="isWhiteRookDragged(dndPieceData)" class="dndPiece" />
+        <WQ v-else-if="isWhiteQueenDragged(dndPieceData)" class="dndPiece" />
+        <WK v-else-if="isWhiteKingDragged(dndPieceData)" class="dndPiece" />
+        <BP v-else-if="isBlackPawnDragged(dndPieceData)" class="dndPiece" />
+        <BN v-else-if="isBlackKnightDragged(dndPieceData)" class="dndPiece" />
+        <BB v-else-if="isBlackBishopDragged(dndPieceData)" class="dndPiece" />
+        <BR v-else-if="isBlackRookDragged(dndPieceData)" class="dndPiece" />
+        <BQ v-else-if="isBlackQueenDragged(dndPieceData)" class="dndPiece" />
+        <BK v-else-if="isBlackKingDragged(dndPieceData)" class="dndPiece" />
+        <div v-else />
+      </div>
+      <!-- drag and drop layer -->
+    </div>
+    <!-- promotion layer -->
+    <div v-if="promotionPending" class="promotion-overlay-layer">
+      <div class="promotion-layer">
+        <div class="promotion-buttons">
+          <template v-if="logic.turn() === 'w'">
+            <WQ
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('q')"
             />
             <WR
-              v-else-if="isWhiteRookAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('r')"
             />
-            <WQ
-              v-else-if="isWhiteQueenAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+            <WB
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('b')"
             />
-            <WK
-              v-else-if="isWhiteKingAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+            <WN
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('n')"
             />
-            <BP
-              v-else-if="isBlackPawnAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
-            />
-            <BN
-              v-else-if="isBlackKnightAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
-            />
-            <BB
-              v-else-if="isBlackBishopAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+          </template>
+          <template v-else>
+            <BQ
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('q')"
             />
             <BR
-              v-else-if="isBlackRookAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('r')"
             />
-            <BQ
-              v-else-if="isBlackQueenAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+            <BB
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('b')"
             />
-            <BK
-              v-else-if="isBlackKingAtCell(currentPosition, file, rank)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
+            <BN
+              :size="cellsSize"
+              class="single-promotion-button"
+              @click="() => commitPromotionMove('n')"
             />
-            <div
-              v-else-if="isDnDOriginCell(file, rank, dndPieceData)"
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-origin'
-                  : 'dnd-target'
-              "
-            />
-            <div
-              v-else
-              :class="
-                isDnDTargetCell(file, rank, dndPieceData)
-                  ? 'dnd-target'
-                  : isDnDCrossCell(file, rank, dndPieceData)
-                  ? 'dnd-cross-cell'
-                  : 'no-highlight-cell'
-              "
-            />
-          </div>
-        </template>
-        <!-- cells -->
-
-        <!-- right coordinate -->
-        <p v-if="props.coordinatesVisible" class="coordinate">
-          {{ String.fromCharCode("1".charCodeAt(0) + rank) }}
-        </p>
-        <div v-else />
-        <!-- right coordinate-->
-      </template>
-      <!-- medium lines -->
-
-      <!-- bottom coordinates -->
-      <div />
-      <template v-for="file in fileIndexes">
-        <p v-if="props.coordinatesVisible" class="coordinate">
-          {{ String.fromCharCode("A".charCodeAt(0) + file) }}
-        </p>
-        <div v-else />
-      </template>
-      <div class="player-turn-cell">
-        <div
-          class="player-turn"
-          :class="logic.turn() === 'w' ? 'white-turn' : 'black-turn'"
-        />
+          </template>
+        </div>
       </div>
-      <!-- bottom coordinates -->
     </div>
-    <!-- lowest layer -->
-
-    <!-- drag and drop layer -->
-    <div class="dnd-layer">
-      <WP v-if="isWhitePawnDragged(dndPieceData)" class="dndPiece" />
-      <WN v-else-if="isWhiteKnightDragged(dndPieceData)" class="dndPiece" />
-      <WB v-else-if="isWhiteBishopDragged(dndPieceData)" class="dndPiece" />
-      <WR v-else-if="isWhiteRookDragged(dndPieceData)" class="dndPiece" />
-      <WQ v-else-if="isWhiteQueenDragged(dndPieceData)" class="dndPiece" />
-      <WK v-else-if="isWhiteKingDragged(dndPieceData)" class="dndPiece" />
-      <BP v-else-if="isBlackPawnDragged(dndPieceData)" class="dndPiece" />
-      <BN v-else-if="isBlackKnightDragged(dndPieceData)" class="dndPiece" />
-      <BB v-else-if="isBlackBishopDragged(dndPieceData)" class="dndPiece" />
-      <BR v-else-if="isBlackRookDragged(dndPieceData)" class="dndPiece" />
-      <BQ v-else-if="isBlackQueenDragged(dndPieceData)" class="dndPiece" />
-      <BK v-else-if="isBlackKingDragged(dndPieceData)" class="dndPiece" />
-      <div v-else />
-    </div>
-    <!-- drag and drop layer -->
+    <!-- promotion layer -->
+    <!--inner layer -->
   </div>
 </template>
 
@@ -259,6 +314,7 @@ import {
   isBlackRookAtCell,
   isBlackQueenAtCell,
   isBlackKingAtCell,
+  cellAlgebraic,
 } from "./util/PiecesTest.js";
 
 import {
@@ -285,6 +341,7 @@ import {
   DndPieceData,
   DndLocation,
 } from "./util/DragAndDrop.js";
+import { cp } from "fs";
 
 interface Move {
   start: Cell;
@@ -403,6 +460,17 @@ const fontSize = computed<string>(() => `${cellsSize.value * 0.3}px`);
 
 const globalSizePx = computed<string>(() => `${props.size}px`);
 const cellsSizePx = computed<string>(() => `${cellsSize.value}px`);
+const promotionStyleWidthPx = computed<string>(() => `${props.size * 0.8}px`);
+const promotionStyleHeightPx = computed<string>(() => `${props.size * 0.6}px`);
+const promotionButtonBorder = computed<string>(
+  () => `${cellsSize.value * 0.08}px solid black`
+);
+const promotionButtonPadding = computed<string>(
+  () => `${cellsSize.value * 0.01}px`
+);
+const promotionButtonMargin = computed<string>(
+  () => `${cellsSize.value * 0.02}px`
+);
 const gridTemplate = computed<string>(
   () =>
     `${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px / ${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px`
@@ -506,11 +574,19 @@ function newGame(startPositionFen: string | undefined = standardPosition) {
   logic = new Chess(startPositionFen);
   update();
   startPosition.value = startPositionFen;
+  promotionPending.value = false;
   cancelDnd();
   gameInProgress.value = true;
   handleGameEndedStatus();
   updatePlayerHuman();
   updateWaitingForExternalMove();
+}
+
+function stop() {
+  cancelDnd();
+  waitingForExternalMove.value = false;
+  promotionPending.value = false;
+  gameInProgress.value = false;
 }
 
 function convertMoveSanToMoveFan(moveSan: string, whiteTurn: boolean) {
@@ -558,18 +634,6 @@ function updateAndEmitLastMove(
   const moveSan = allMovesHistory[allMovesHistory.length - 1];
   const moveFan = convertMoveSanToMoveFan(moveSan, whiteTurnBeforeMove);
 
-  const lastMoveEventPayload = {
-    moveNumber,
-    whiteTurn: whiteTurnBeforeMove,
-    moveSan,
-    moveFan,
-    positionFen: logicAfterMove.fen(),
-    fromFileIndex: startFile,
-    fromRankIndex: startRank,
-    toFileIndex: endFile,
-    toRankIndex: endRank,
-  };
-
   emit(
     "moveDone",
     moveNumber,
@@ -611,6 +675,59 @@ function setPromotionPending(
       rank: endRank,
     },
   };
+}
+
+function commitPromotionMove(type: string) {
+  const moveObject = {
+    from: cellAlgebraic(
+      pendingPromotionMove.value.start.file,
+      pendingPromotionMove.value.start.rank
+    ),
+    to: cellAlgebraic(
+      pendingPromotionMove.value.end.file,
+      pendingPromotionMove.value.end.rank
+    ),
+    promotion: type,
+  };
+
+  const logicBeforeMove = new Chess(logic.fen());
+
+  logic.move(moveObject);
+  // Update the logic variable => update the board !
+  logic = logic;
+
+  cancelDnd();
+
+  const {
+    start: { file: startFile, rank: startRank },
+    end: { file: endFile, rank: endRank },
+  } = pendingPromotionMove.value;
+
+  pendingPromotionMove.value = {
+    start: {
+      file: -Infinity,
+      rank: -Infinity,
+    },
+    end: {
+      file: -Infinity,
+      rank: -Infinity,
+    },
+  };
+  promotionPending.value = false;
+
+  handleGameEndedStatus();
+
+  updateAndEmitLastMove(
+    startFile,
+    startRank,
+    endFile,
+    endRank,
+    logicBeforeMove,
+    logic
+  );
+
+  updatePlayerHuman();
+  updateWaitingForExternalMove();
 }
 
 function reactToMouseDown(e: MouseEvent) {
@@ -691,6 +808,7 @@ onUpdated(() => {
 defineExpose({
   newGame,
   isWhiteTurn,
+  stop,
 });
 </script>
 
@@ -701,6 +819,14 @@ defineExpose({
   width: v-bind(globalSizePx);
   height: v-bind(globalSizePx);
   background-color: v-bind(background);
+}
+
+.inner-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
 }
 
 .lowest-layer {
@@ -723,12 +849,16 @@ defineExpose({
   position: absolute;
   left: 0;
   top: 0;
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
 }
 
 .promotion-overlay-layer {
   position: absolute;
   left: 0;
   top: 0;
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
   opacity: 0.8;
   display: flex;
   justify-content: center;
@@ -740,6 +870,8 @@ defineExpose({
   position: absolute;
   left: 0;
   top: 0;
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -747,15 +879,18 @@ defineExpose({
   align-items: center;
 }
 
-.promotion-title {
-  font-weight: bold;
-  color: black;
-}
-
 .promotion-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: v-bind(promotionStyleWidthPx);
+  height: v-bind(promotionStyleHeightPx);
+}
+
+.single-promotion-button {
+  border: v-bind(promotionButtonBorder);
+  padding: v-bind(promotionButtonPadding);
+  margin: v-bind(promotionButtonMargin);
 }
 
 .cell {
