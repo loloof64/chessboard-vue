@@ -210,6 +210,15 @@
       </div>
       <!-- lowest layer -->
 
+      <!-- last move arrow -->
+      <div v-if="lastMoveVisible" class="last-move-layer">
+        <div class="last-move-line last-move-base-line" />
+        <div class="last-move-line last-move-arrow-1" />
+        <div class="last-move-line last-move-arrow-2" />
+        <div class="last-move-line last-move-arrow-point" />
+      </div>
+      <!-- last move arrow -->
+
       <!-- drag and drop layer -->
       <div class="dnd-layer">
         <WP
@@ -417,6 +426,34 @@ const pendingPromotionMove = ref<Move>({
   },
 });
 
+const lastMoveBaselineLeft = ref<string>("0px");
+const lastMoveBaselineTop = ref<string>("0px");
+const lastMoveBaselineWidth = ref<string>("0px");
+const lastMoveBaselineHeight = ref<string>("0px");
+const lastMoveBaselineTransform = ref<string>("");
+const lastMoveBaselineTransformOrigin = ref<string>("center");
+
+const lastMoveArrow1Left = ref<string>("0px");
+const lastMoveArrow1Top = ref<string>("0px");
+const lastMoveArrow1Width = ref<string>("0px");
+const lastMoveArrow1Height = ref<string>("0px");
+const lastMoveArrow1Transform = ref<string>("");
+const lastMoveArrow1TransformOrigin = ref<string>("center");
+
+const lastMoveArrow2Left = ref<string>("0px");
+const lastMoveArrow2Top = ref<string>("0px");
+const lastMoveArrow2Width = ref<string>("0px");
+const lastMoveArrow2Height = ref<string>("0px");
+const lastMoveArrow2Transform = ref<string>("");
+const lastMoveArrow2TransformOrigin = ref<string>("center");
+
+const lastMovePointLeft = ref<string>("0px");
+const lastMovePointTop = ref<string>("0px");
+const lastMovePointWidth = ref<string>("0px");
+const lastMovePointHeight = ref<string>("0px");
+const lastMovePointTransform = ref<string>("");
+const lastMovePointTransformOrigin = ref<string>("center");
+
 const props = withDefaults(
   defineProps<{
     size?: number;
@@ -429,8 +466,10 @@ const props = withDefaults(
     originCellColor?: string;
     targetCellColor?: string;
     dndCrossCellColor?: string;
+    moveHighlightColor?: string;
     whitePlayerHuman?: boolean;
     blackPlayerHuman?: boolean;
+    lastMoveVisible?: boolean;
   }>(),
   {
     size: 100,
@@ -443,8 +482,10 @@ const props = withDefaults(
     originCellColor: "crimson",
     targetCellColor: "ForestGreen",
     dndCrossCellColor: "DimGrey",
+    moveHighlightColor: "CadetBlue",
     whitePlayerHuman: true,
     blackPlayerHuman: true,
+    lastMoveVisible: true,
   }
 );
 
@@ -491,6 +532,7 @@ const gridTemplate = computed<string>(
   () =>
     `${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px / ${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px`
 );
+const halfThickness = computed(() => cellsSize.value * 0.08);
 
 const rootElement = ref<HTMLElement | undefined>();
 
@@ -588,6 +630,7 @@ function updatePlayerHuman() {
 
 function newGame(startPositionFen: string | undefined = standardPosition) {
   logic = new Chess(startPositionFen);
+  clearLastMoveArrow();
   update();
   startPosition.value = startPositionFen;
   promotionPending.value = false;
@@ -643,6 +686,8 @@ function updateAndEmitLastMove(
       rank: endRank,
     },
   };
+
+  updateLastMoveArrow();
 
   const moveNumber = parseInt(logicBeforeMove.fen().split(" ")[5]);
   const allMovesHistory = logicAfterMove.history();
@@ -832,8 +877,105 @@ function isWhiteTurn(): boolean {
   return logic.turn() === "w";
 }
 
+function clearLastMoveArrow() {
+  lastMoveBaselineLeft.value = `0px`;
+  lastMoveBaselineTop.value = `0px`;
+  lastMoveBaselineWidth.value = `0px`;
+  lastMoveBaselineHeight.value = `0px`;
+  lastMoveBaselineTransform.value = ``;
+  lastMoveBaselineTransformOrigin.value = `0px 0px`;
+
+ lastMoveArrow1Left.value = `0px`;
+  lastMoveArrow1Top.value = `0px`;
+  lastMoveArrow1Width.value = `0px`;
+  lastMoveArrow1Height.value = `0px`;
+  lastMoveArrow1Transform.value = ``;
+  lastMoveArrow1TransformOrigin.value = `0px 0px`;
+
+  lastMoveArrow2Left.value = `0px`;
+  lastMoveArrow2Top.value = `0px`;
+  lastMoveArrow2Width.value = `0px`;
+  lastMoveArrow2Height.value = `0px`;
+  lastMoveArrow2Transform.value = `)`;
+  lastMoveArrow2TransformOrigin.value = `${halfThickness.value}px ${0}px`;
+
+  lastMovePointLeft.value = `0px`;
+  lastMovePointTop.value = `0px`;
+  lastMovePointWidth.value = `0px`;
+  lastMovePointHeight.value = `0px`
+  lastMovePointTransform.value = ``;
+  lastMovePointTransformOrigin.value = "center";
+}
+
+function updateLastMoveArrow() {
+  const startColumn = props.reversed
+    ? 7 - lastMove.value.start.file
+    : lastMove.value.start.file;
+  const startLine = props.reversed
+    ? lastMove.value.start.rank
+    : 7 - lastMove.value.start.rank;
+  const endColumn = props.reversed
+    ? 7 - lastMove.value.end.file
+    : lastMove.value.end.file;
+  const endLine = props.reversed
+    ? lastMove.value.end.rank
+    : 7 - lastMove.value.end.rank;
+
+  const ax = cellsSize.value * (startColumn + 1.0);
+  const ay = cellsSize.value * (startLine + 1.0);
+  const bx = cellsSize.value * (endColumn + 1.0);
+  const by = cellsSize.value * (endLine + 1.0);
+
+  const realAx = ax - halfThickness.value;
+  const realAy = ay;
+  const realBx = bx - halfThickness.value;
+  const realBy = by;
+
+  const vectX = realBx - realAx;
+  const vectY = realBy - realAy;
+
+  const baseLineAngleRad = Math.atan2(vectY, vectX) - Math.PI / 2.0;
+  const baseLineLength = Math.sqrt(vectX * vectX + vectY * vectY);
+  lastMoveBaselineLeft.value = `${realAx}px`;
+  lastMoveBaselineTop.value = `${realAy}px`;
+  lastMoveBaselineWidth.value = `${2 * halfThickness.value}px`;
+  lastMoveBaselineHeight.value = `${baseLineLength}px`;
+  lastMoveBaselineTransform.value = `rotate(${baseLineAngleRad}rad)`;
+  lastMoveBaselineTransformOrigin.value = `${halfThickness.value}px ${0}px`;
+
+  const arrow1AngleRad =
+    Math.atan2(vectY, vectX) - Math.PI / 2.0 - (3 * Math.PI) / 4.0;
+  const arrow1Length = Math.sqrt(vectX * vectX + vectY * vectY) * 0.4;
+  lastMoveArrow1Left.value = `${realBx}px`;
+  lastMoveArrow1Top.value = `${realBy}px`;
+  lastMoveArrow1Width.value = `${2 * halfThickness.value}px`;
+  lastMoveArrow1Height.value = `${arrow1Length}px`;
+  lastMoveArrow1Transform.value = `rotate(${arrow1AngleRad}rad)`;
+  lastMoveArrow1TransformOrigin.value = `${halfThickness.value}px ${0}px`;
+
+  const arrow2AngleRad =
+    Math.atan2(vectY, vectX) - Math.PI / 2.0 + (3 * Math.PI) / 4.0;
+  const arrow2Length = Math.sqrt(vectX * vectX + vectY * vectY) * 0.4;
+  lastMoveArrow2Left.value = `${realBx}px`;
+  lastMoveArrow2Top.value = `${realBy}px`;
+  lastMoveArrow2Width.value = `${2 * halfThickness.value}px`;
+  lastMoveArrow2Height.value = `${arrow2Length}px`;
+  lastMoveArrow2Transform.value = `rotate(${arrow2AngleRad}rad)`;
+  lastMoveArrow2TransformOrigin.value = `${halfThickness.value}px ${0}px`;
+
+  const pointAngleRad = Math.atan2(vectY, vectX) + Math.PI / 4.0;
+  const pointLength = 2 * halfThickness.value;
+  lastMovePointLeft.value = `${realBx}px`;
+  lastMovePointTop.value = `${realBy}px`;
+  lastMovePointWidth.value = `${2 * halfThickness.value}px`;
+  lastMovePointHeight.value = `${pointLength}px`;
+  lastMovePointTransform.value = `rotate(${pointAngleRad}rad)`;
+  lastMovePointTransformOrigin.value = "center";
+}
+
 onUpdated(() => {
   currentPosition.value = logic.fen();
+  updateLastMoveArrow();
 });
 
 defineExpose({
@@ -874,6 +1016,8 @@ defineExpose({
   position: absolute;
   left: 0;
   top: 0;
+  width: v-bind(globalSizePx);
+  height: v-bind(globalSizePx);
 }
 
 .dnd-layer {
@@ -1002,5 +1146,69 @@ defineExpose({
 .no-highlight-cell {
   width: v-bind(cellsSizePx);
   height: v-bind(cellsSizePx);
+}
+
+.last-move-base-line {
+  left: v-bind(lastMoveBaselineLeft);
+  top: v-bind(lastMoveBaselineTop);
+  width: v-bind(lastMoveBaselineWidth);
+  height: v-bind(lastMoveBaselineHeight);
+  transform: v-bind(lastMoveBaselineTransform);
+  -ms-transform: v-bind(lastMoveBaselineTransform);
+  -moz-transform: v-bind(lastMoveBaselineTransform);
+  -webkit-transform: v-bind(lastMoveBaselineTransform);
+  transform-origin: v-bind(lastMoveBaselineTransformOrigin);
+  -ms-transform-origin: v-bind(lastMoveBaselineTransformOrigin);
+  -moz-transform-origin: v-bind(lastMoveBaselineTransformOrigin);
+  -webkit-transform-origin: v-bind(lastMoveBaselineTransformOrigin);
+  background-color: v-bind(moveHighlightColor);
+}
+
+.last-move-arrow-1 {
+  left: v-bind(lastMoveArrow1Left);
+  top: v-bind(lastMoveArrow1Top);
+  width: v-bind(lastMoveArrow1Width);
+  height: v-bind(lastMoveArrow1Height);
+  transform: v-bind(lastMoveArrow1Transform);
+  -ms-transform: v-bind(lastMoveArrow1Transform);
+  -moz-transform: v-bind(lastMoveArrow1Transform);
+  -webkit-transform: v-bind(lastMoveArrow1Transform);
+  transform-origin: v-bind(lastMoveArrow1TransformOrigin);
+  -ms-transform-origin: v-bind(lastMoveArrow1TransformOrigin);
+  -moz-transform-origin: v-bind(lastMoveArrow1TransformOrigin);
+  -webkit-transform-origin: v-bind(lastMoveArrow1TransformOrigin);
+  background-color: v-bind(moveHighlightColor);
+}
+
+.last-move-arrow-2 {
+  left: v-bind(lastMoveArrow2Left);
+  top: v-bind(lastMoveArrow2Top);
+  width: v-bind(lastMoveArrow2Width);
+  height: v-bind(lastMoveArrow2Height);
+  transform: v-bind(lastMoveArrow2Transform);
+  -ms-transform: v-bind(lastMoveArrow2Transform);
+  -moz-transform: v-bind(lastMoveArrow2Transform);
+  -webkit-transform: v-bind(lastMoveArrow2Transform);
+  transform-origin: v-bind(lastMoveArrow2TransformOrigin);
+  -ms-transform-origin: v-bind(lastMoveArrow2TransformOrigin);
+  -moz-transform-origin: v-bind(lastMoveArrow2TransformOrigin);
+  -webkit-transform-origin: v-bind(lastMoveArrow2TransformOrigin);
+  background-color: v-bind(moveHighlightColor);
+}
+
+.last-move-point {
+  left: v-bind(lastMovePointLeft);
+  top: v-bind(lastMovePointTop);
+  width: v-bind(lastMovePointWidth);
+  height: v-bind(lastMovePointHeight);
+  transform: v-bind(lastMovePointTransform);
+  -ms-transform: v-bind(lastMovePointTransform);
+  -moz-transform: v-bind(lastMovePointTransform);
+  -webkit-transform: v-bind(lastMovePointTransform);
+  transform-origin: v-bind(lastMovePointTransformOrigin);
+  -ms-transform-origin: v-bind(lastMovePointTransformOrigin);
+  -moz-transform-origin: v-bind(lastMovePointTransformOrigin);
+  -webkit-transform-origin: v-bind(lastMovePointTransformOrigin);
+  background-color: v-bind(moveHighlightColor);
 }
 </style>
