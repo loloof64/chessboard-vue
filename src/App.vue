@@ -9,11 +9,11 @@ function newGameHandler() {
   board2.value.newGame();
 }
 
-function handleCheckmate() {
-  if (board.value.isWhiteTurn()) {
-    alert("Black won by checkmate");
-  } else {
+function handleCheckmate(byWhite: boolean) {
+  if (byWhite) {
     alert("White won by checkmate");
+  } else {
+    alert("Black won by checkmate");
   }
 }
 </script>

@@ -291,15 +291,25 @@ interface Move {
   end: Cell;
 }
 
-const emit = defineEmits([
-  "checkmate",
-  "stalemate",
-  "perpetualDraw",
-  "missingMaterialDraw",
-  "fiftyMovesDraw",
-  "waitingManualMove",
-  "moveDone",
-]);
+const emit = defineEmits<{
+  checkmate: [byWhite: boolean];
+  stalemate: [];
+  perpetualDraw: [];
+  missingMaterialDraw: [];
+  fiftyMovesDraw: [];
+  waitingManualMove: [];
+  moveDone: [
+    moveNumber: number,
+    whiteTurn: boolean,
+    moveSan: string,
+    moveFan: string,
+    resultingPosition: string,
+    fromFileIndex: number,
+    fromRankIndex: number,
+    toFileIndex: number,
+    toRankIndex: number
+  ];
+}>();
 
 const emptyPosition = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 const standardPosition =
@@ -421,7 +431,7 @@ function handleGameEndedStatus() {
   if (logic.isCheckmate()) {
     cancelDnd();
     gameInProgress.value = false;
-    emit("checkmate", { whiteTurnBeforeMove: logic.turn() !== "w" });
+    emit("checkmate", logic.turn() !== "w");
   } else if (logic.isStalemate()) {
     cancelDnd();
     gameInProgress.value = false;
@@ -542,7 +552,7 @@ function updateAndEmitLastMove(
     },
   };
 
-  const moveNumber = logicBeforeMove.fen().split(" ")[5];
+  const moveNumber = parseInt(logicBeforeMove.fen().split(" ")[5]);
   const allMovesHistory = logicAfterMove.history();
   const whiteTurnBeforeMove = logicBeforeMove.turn() === "w";
   const moveSan = allMovesHistory[allMovesHistory.length - 1];
@@ -560,7 +570,18 @@ function updateAndEmitLastMove(
     toRankIndex: endRank,
   };
 
-  emit("moveDone", { moveObject: lastMoveEventPayload });
+  emit(
+    "moveDone",
+    moveNumber,
+    whiteTurnBeforeMove,
+    moveSan,
+    moveFan,
+    logicAfterMove.fen(),
+    startFile,
+    startRank,
+    endFile,
+    endRank
+  );
 }
 
 function updateDndLocation(x: number, y: number, file: number, rank: number) {
@@ -659,8 +680,8 @@ function reactToMouseExited(e: MouseEvent) {
   );
 }
 
-function isWhiteTurn() : boolean {
-  return logic.turn() === 'w';
+function isWhiteTurn(): boolean {
+  return logic.turn() === "w";
 }
 
 onUpdated(() => {
