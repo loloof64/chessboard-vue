@@ -806,6 +806,54 @@ function cancelPromotion() {
   cancelDnd();
 }
 
+/*
+If you pass a string, you must give a move as UCI format,
+for example b1c3 or even a7a8q.
+*/
+function playManualMove(
+  inputMove: string | { to: string; from: string; promotion?: string }
+): boolean {
+  if (!gameInProgress.value) return false;
+  if (!waitingForExternalMove.value) return false;
+
+  try {
+    const logicBeforeMove = new Chess(logic.fen());
+    logic.move(inputMove);
+
+    let startFile: number, startRank: number, endFile: number, endRank: number;
+
+    if (typeof inputMove === "string") {
+      startFile = inputMove.charCodeAt(0) - "a".charCodeAt(0);
+      startRank = inputMove.charCodeAt(1) - "1".charCodeAt(0);
+      endFile = inputMove.charCodeAt(2) - "a".charCodeAt(0);
+      endRank = inputMove.charCodeAt(3) - "1".charCodeAt(0);
+    } else {
+      startFile = inputMove.from.charCodeAt(0) - "a".charCodeAt(0);
+      startRank = inputMove.from.charCodeAt(1) - "1".charCodeAt(0);
+      endFile = inputMove.to.charCodeAt(0) - "a".charCodeAt(0);
+      endRank = inputMove.to.charCodeAt(1) - "1".charCodeAt(0);
+    }
+
+    updateAndEmitLastMove(
+      startFile,
+      startRank,
+      endFile,
+      endRank,
+      logicBeforeMove,
+      logic
+    );
+
+    handleGameEndedStatus();
+
+    updatePlayerHuman();
+    updateWaitingForExternalMove();
+
+    return true;
+  } catch (ex: any) {
+    return false;
+  }
+}
+
 function reactToMouseDown(e: MouseEvent) {
   e.preventDefault();
   handleMouseDown(
@@ -858,7 +906,7 @@ function reactToMouseUp(e: MouseEvent) {
     updateWaitingForExternalMove,
     waitingForExternalMove.value,
     playerHuman.value,
-    updatePlayerHuman,
+    updatePlayerHuman
   );
 }
 
@@ -887,8 +935,8 @@ function clearLastMoveArrow() {
     end: {
       file: -Infinity,
       rank: -Infinity,
-    }
-  }
+    },
+  };
   lastMoveBaselineLeft.value = `0px`;
   lastMoveBaselineTop.value = `0px`;
   lastMoveBaselineWidth.value = `0px`;
@@ -896,7 +944,7 @@ function clearLastMoveArrow() {
   lastMoveBaselineTransform.value = ``;
   lastMoveBaselineTransformOrigin.value = `0px 0px`;
 
- lastMoveArrow1Left.value = `0px`;
+  lastMoveArrow1Left.value = `0px`;
   lastMoveArrow1Top.value = `0px`;
   lastMoveArrow1Width.value = `0px`;
   lastMoveArrow1Height.value = `0px`;
@@ -913,7 +961,7 @@ function clearLastMoveArrow() {
   lastMovePointLeft.value = `0px`;
   lastMovePointTop.value = `0px`;
   lastMovePointWidth.value = `0px`;
-  lastMovePointHeight.value = `0px`
+  lastMovePointHeight.value = `0px`;
   lastMovePointTransform.value = ``;
   lastMovePointTransformOrigin.value = "center";
 }
@@ -993,6 +1041,7 @@ defineExpose({
   newGame,
   isWhiteTurn,
   stop,
+  playManualMove,
 });
 </script>
 
