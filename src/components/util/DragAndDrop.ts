@@ -190,7 +190,8 @@ export function handleMouseUp(
     originCell.file,
     originCell.rank,
     file,
-    rank
+    rank,
+    "q"
   );
   try {
     logicClone.move(testMoveObject);
@@ -258,12 +259,12 @@ export function handleMouseExited(
   cancelDnd();
 }
 
-function buildMoveObject(
+export function buildMoveObject(
   startFile: number,
   startRank: number,
   endFile: number,
   endRank: number,
-  promotion: string = "q"
+  promotion?: string,
 ) {
   const startAlgebraic = cellAlgebraic(startFile, startRank);
   const endAlgebraic = cellAlgebraic(endFile, endRank);

@@ -1,5 +1,4 @@
 <template>
-  <input type="hidden" :value="updater" />
   <div class="root" ref="rootElement">
     <!-- inner layer-->
     <div
@@ -344,6 +343,7 @@ import {
 } from "./util/PiecesTest.js";
 
 import {
+  buildMoveObject,
   handleMouseDown,
   handleMouseExited,
   handleMouseMove,
@@ -398,7 +398,6 @@ const standardPosition =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 let logic = new Chess(emptyPosition);
 
-const updater = ref<number>(Math.random());
 const currentPosition = ref(logic.fen());
 const startPosition = ref<string>(emptyPosition);
 const gameInProgress = ref<boolean>(false);
@@ -407,22 +406,22 @@ const waitingForExternalMove = ref<boolean>(false);
 const dragAndDropInProgress = ref<boolean>(false);
 const lastMove = ref<Move>({
   start: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
   end: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
 });
 const pendingPromotionMove = ref<Move>({
   start: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
   end: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
 });
 
@@ -490,23 +489,23 @@ const props = withDefaults(
 );
 
 function update() {
-  updater.value = Math.random();
+  currentPosition.value = logic.fen();
 }
 
 const dndPieceData = ref<DndPieceData>({
   piece: "",
   originCell: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
   targetCell: {
-    file: -Infinity,
-    rank: -Infinity,
+    file: -100,
+    rank: -100,
   },
 });
 const dndLocation = ref<DndLocation>({
-  x: -Infinity,
-  y: -Infinity,
+  x: -100,
+  y: -100,
 });
 const promotionPending = ref<boolean>(false);
 
@@ -605,15 +604,15 @@ function cancelDnd() {
   dndPieceData.value = {
     piece: "",
     originCell: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
     targetCell: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
   };
-  dndLocation.value = { x: -Infinity, y: -Infinity };
+  dndLocation.value = { x: -100, y: -100 };
 }
 
 function updatePlayerHuman() {
@@ -754,8 +753,7 @@ function commitPromotionMove(type: string) {
   const logicBeforeMove = new Chess(logic.fen());
 
   logic.move(moveObject);
-  // Update the logic variable => update the board !
-  logic = logic;
+  update();
 
   cancelDnd();
 
@@ -766,12 +764,12 @@ function commitPromotionMove(type: string) {
 
   pendingPromotionMove.value = {
     start: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
     end: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
   };
   promotionPending.value = false;
@@ -795,12 +793,12 @@ function cancelPromotion() {
   promotionPending.value = false;
   pendingPromotionMove.value = {
     start: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
     end: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
   };
   cancelDnd();
@@ -816,42 +814,59 @@ function playManualMove(
   if (!gameInProgress.value) return false;
   if (!waitingForExternalMove.value) return false;
 
+  const logicBeforeMove = new Chess(logic.fen());
+
+  let startFile: number,
+    startRank: number,
+    endFile: number,
+    endRank: number,
+    promotion: string | undefined;
+
+  if (typeof inputMove === "string") {
+    startFile = inputMove.charCodeAt(0) - "a".charCodeAt(0);
+    startRank = inputMove.charCodeAt(1) - "1".charCodeAt(0);
+    endFile = inputMove.charCodeAt(2) - "a".charCodeAt(0);
+    endRank = inputMove.charCodeAt(3) - "1".charCodeAt(0);
+    promotion = inputMove.length >= 5 ? inputMove.charAt(4) : undefined;
+  } else {
+    startFile = inputMove.from.charCodeAt(0) - "a".charCodeAt(0);
+    startRank = inputMove.from.charCodeAt(1) - "1".charCodeAt(0);
+    endFile = inputMove.to.charCodeAt(0) - "a".charCodeAt(0);
+    endRank = inputMove.to.charCodeAt(1) - "1".charCodeAt(0);
+    promotion = inputMove.promotion;
+  }
+
+  const moveObject = buildMoveObject(
+    startFile,
+    startRank,
+    endFile,
+    endRank,
+    promotion
+  );
+
   try {
-    const logicBeforeMove = new Chess(logic.fen());
-    logic.move(inputMove);
-
-    let startFile: number, startRank: number, endFile: number, endRank: number;
-
-    if (typeof inputMove === "string") {
-      startFile = inputMove.charCodeAt(0) - "a".charCodeAt(0);
-      startRank = inputMove.charCodeAt(1) - "1".charCodeAt(0);
-      endFile = inputMove.charCodeAt(2) - "a".charCodeAt(0);
-      endRank = inputMove.charCodeAt(3) - "1".charCodeAt(0);
-    } else {
-      startFile = inputMove.from.charCodeAt(0) - "a".charCodeAt(0);
-      startRank = inputMove.from.charCodeAt(1) - "1".charCodeAt(0);
-      endFile = inputMove.to.charCodeAt(0) - "a".charCodeAt(0);
-      endRank = inputMove.to.charCodeAt(1) - "1".charCodeAt(0);
-    }
-
-    updateAndEmitLastMove(
-      startFile,
-      startRank,
-      endFile,
-      endRank,
-      logicBeforeMove,
-      logic
-    );
-
-    handleGameEndedStatus();
-
-    updatePlayerHuman();
-    updateWaitingForExternalMove();
-
-    return true;
+    logic.move(moveObject);
   } catch (ex: any) {
     return false;
   }
+
+  update();
+
+  updateAndEmitLastMove(
+    startFile,
+    startRank,
+    endFile,
+    endRank,
+    logicBeforeMove,
+    logic
+  );
+
+  handleGameEndedStatus();
+
+  updatePlayerHuman();
+  updateWaitingForExternalMove();
+
+  return true;
 }
 
 function reactToMouseDown(e: MouseEvent) {
@@ -929,12 +944,12 @@ function isWhiteTurn(): boolean {
 function clearLastMoveArrow() {
   lastMove.value = {
     start: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
     end: {
-      file: -Infinity,
-      rank: -Infinity,
+      file: -100,
+      rank: -100,
     },
   };
   lastMoveBaselineLeft.value = `0px`;
@@ -1032,10 +1047,7 @@ function updateLastMoveArrow() {
   lastMovePointTransformOrigin.value = "center";
 }
 
-onUpdated(() => {
-  currentPosition.value = logic.fen();
-  updateLastMoveArrow();
-});
+onUpdated(() => updateLastMoveArrow());
 
 defineExpose({
   newGame,

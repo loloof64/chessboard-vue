@@ -24,7 +24,11 @@ function reverseBoard() {
 function playManualMove() {
   const moveText = manualField.value?.value;
   const success = board.value.playManualMove(moveText);
-  if (!success) {
+  if (success) {
+    if (!manualField.value) return;
+    manualField.value.value = "";
+  }
+  else {
     alert("Illegal move, or you don't have right to send one now !");
   }
 }
