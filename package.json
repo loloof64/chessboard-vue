@@ -14,7 +14,8 @@
     "component",
     "vue3",
     "vue",
-    "vuejs"
+    "vuejs",
+    "typescript"
   ],
   "main": "./dist/chessboard-vue.umd.cjs",
   "module": "./dist/chessboard-vue.js",

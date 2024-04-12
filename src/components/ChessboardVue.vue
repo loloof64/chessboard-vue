@@ -363,10 +363,14 @@ import {
   isBlackRookDragged,
   isBlackQueenDragged,
   isBlackKingDragged,
-  Cell,
   DndPieceData,
   DndLocation,
 } from "./util/DragAndDrop.js";
+
+export interface Cell {
+  file: number,
+  rank: number,
+}
 
 export interface Move {
   start: Cell;
@@ -812,7 +816,7 @@ If you pass a string, you must give a move as UCI format,
 for example b1c3 or even a7a8q.
 */
 function playManualMove(
-  inputMove: string | { to: string; from: string; promotion?: string }
+  inputMove: string | { from: string; to: string; promotion?: string }
 ): boolean {
   if (!gameInProgress.value) return false;
   if (!waitingForExternalMove.value) return false;
@@ -1082,12 +1086,12 @@ onUpdated(() => updateLastMoveArrow());
 
 defineExpose({
   newGame,
-  isWhiteTurn,
   stop,
+  isWhiteTurn,
   playManualMove,
   gameIsInProgress,
-  setPositionAndLastMove,
   setStartPosition,
+  setPositionAndLastMove,
   getCurrentPosition,
 });
 </script>
