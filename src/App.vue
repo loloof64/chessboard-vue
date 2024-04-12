@@ -15,11 +15,13 @@ const gameInProgress = computed<boolean>(() => {
   if (!board.value) return false;
   return board.value.gameIsInProgress();
 });
+const currentPosition = ref<string>("");
 
 function newGameHandler() {
   if (!board.value) return;
   historyElements.value = [];
   board.value.newGame();
+  currentPosition.value = board.value.getCurrentPosition();
 }
 
 function handleCheckmate(byWhite: boolean) {
@@ -41,6 +43,7 @@ function playManualMove() {
   if (success) {
     if (!manualField.value) return;
     manualField.value.value = "";
+    currentPosition.value = board.value.getCurrentPosition();
   } else {
     alert("Illegal move, or you don't have right to send one now !");
   }
@@ -54,6 +57,9 @@ function tryToSetHistory(fen?: string, lastMove?: Move) {
   if (!success) {
     alert("Forbidden as game is in progress !");
   }
+  else {
+    currentPosition.value = board.value.getCurrentPosition();
+  }
 }
 
 function tryToSetStartPosition() {
@@ -62,6 +68,9 @@ function tryToSetStartPosition() {
   const success = board.value.setStartPosition();
   if (!success) {
     alert("Forbidden as game is in progress !");
+  }
+  else {
+    currentPosition.value = board.value.getCurrentPosition();
   }
 }
 
@@ -83,6 +92,8 @@ function addHistoryMove(
     fen: resultingPosition,
     lastMove: move,
   });
+  if (!board.value) return;
+  currentPosition.value = board.value.getCurrentPosition();
 }
 
 function stopGame() {
@@ -95,6 +106,7 @@ function stopGame() {
 
 <template>
   <h2>Chessboard test</h2>
+  <h3>{{ currentPosition }}</h3>
   <div>
     <button @click="newGameHandler">New game</button>
     <button @click="reverseBoard">Reverse side</button>

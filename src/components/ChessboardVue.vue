@@ -1074,6 +1074,10 @@ function setPositionAndLastMove(positionFen: string, move: Move): boolean {
   return true;
 }
 
+function getCurrentPosition(): string {
+  return logic.fen();
+}
+
 onUpdated(() => updateLastMoveArrow());
 
 defineExpose({
@@ -1084,6 +1088,7 @@ defineExpose({
   gameIsInProgress,
   setPositionAndLastMove,
   setStartPosition,
+  getCurrentPosition,
 });
 </script>
 
