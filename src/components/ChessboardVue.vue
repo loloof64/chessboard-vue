@@ -309,7 +309,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUpdated } from "vue";
+import {
+  ref,
+  computed,
+  onUpdated,
+  defineEmits,
+  withDefaults,
+  defineProps,
+  defineExpose,
+} from "vue";
 
 import { Chess } from "chess.js";
 import BP from "./pieces/BP.vue";
@@ -368,8 +376,8 @@ import {
 } from "./util/DragAndDrop.js";
 
 export interface Cell {
-  file: number,
-  rank: number,
+  file: number;
+  rank: number;
 }
 
 export interface Move {
@@ -390,7 +398,7 @@ const emit = defineEmits<{
     moveSan: string,
     moveFan: string,
     resultingPosition: string,
-    move: Move,
+    move: Move
   ];
 }>();
 
@@ -709,8 +717,8 @@ function updateAndEmitLastMove(
       },
       end: {
         file: endFile,
-        rank: endRank
-      }
+        rank: endRank,
+      },
     }
   );
 }
@@ -1074,7 +1082,7 @@ function setPositionAndLastMove(positionFen: string, move: Move): boolean {
   lastMove.value = move;
   updateLastMoveArrow();
   update();
-  
+
   return true;
 }
 
