@@ -5,7 +5,7 @@ interface HistoryNode {
   lastMove?: Move;
 }
 
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import ChessboardVue, { Move } from "./components/ChessboardVue.vue";
 const board = ref<typeof ChessboardVue>();
 const reversed = ref<boolean>(false);
@@ -102,6 +102,8 @@ function stopGame() {
     board.value.stop();
   }
 }
+
+onMounted(() => console.log(board.value));
 </script>
 
 <template>

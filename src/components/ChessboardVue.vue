@@ -313,10 +313,6 @@ import {
   ref,
   computed,
   onUpdated,
-  defineEmits,
-  withDefaults,
-  defineProps,
-  defineExpose,
 } from "vue";
 
 import { Chess } from "chess.js";
