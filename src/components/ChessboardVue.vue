@@ -368,7 +368,7 @@ import {
   DndLocation,
 } from "./util/DragAndDrop.js";
 
-interface Move {
+export interface Move {
   start: Cell;
   end: Cell;
 }
@@ -386,10 +386,7 @@ const emit = defineEmits<{
     moveSan: string,
     moveFan: string,
     resultingPosition: string,
-    fromFileIndex: number,
-    fromRankIndex: number,
-    toFileIndex: number,
-    toRankIndex: number
+    move: Move,
   ];
 }>();
 
@@ -701,10 +698,16 @@ function updateAndEmitLastMove(
     moveSan,
     moveFan,
     logicAfterMove.fen(),
-    startFile,
-    startRank,
-    endFile,
-    endRank
+    {
+      start: {
+        file: startFile,
+        rank: startRank,
+      },
+      end: {
+        file: endFile,
+        rank: endRank
+      }
+    }
   );
 }
 
@@ -1047,6 +1050,30 @@ function updateLastMoveArrow() {
   lastMovePointTransformOrigin.value = "center";
 }
 
+function gameIsInProgress(): boolean {
+  return gameInProgress.value;
+}
+
+function setStartPosition(): boolean {
+  if (gameInProgress.value) return false;
+
+  logic = new Chess(startPosition.value);
+  clearLastMoveArrow();
+  update();
+  return true;
+}
+
+function setPositionAndLastMove(positionFen: string, move: Move): boolean {
+  if (gameInProgress.value) return false;
+
+  logic = new Chess(positionFen);
+  lastMove.value = move;
+  updateLastMoveArrow();
+  update();
+  
+  return true;
+}
+
 onUpdated(() => updateLastMoveArrow());
 
 defineExpose({
@@ -1054,6 +1081,9 @@ defineExpose({
   isWhiteTurn,
   stop,
   playManualMove,
+  gameIsInProgress,
+  setPositionAndLastMove,
+  setStartPosition,
 });
 </script>
 
