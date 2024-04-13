@@ -1086,7 +1086,10 @@ function getCurrentPosition(): string {
   return logic.fen();
 }
 
-onUpdated(() => updateLastMoveArrow());
+onUpdated(() => {
+  updateLastMoveArrow();
+  updatePlayerHuman();
+});
 
 defineExpose({
   newGame,

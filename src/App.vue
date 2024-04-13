@@ -5,7 +5,7 @@ interface HistoryNode {
   lastMove?: Move;
 }
 
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 import ChessboardVue, { Move } from "./components/ChessboardVue.vue";
 const board = ref<typeof ChessboardVue>();
 const reversed = ref<boolean>(false);
@@ -56,8 +56,7 @@ function tryToSetHistory(fen?: string, lastMove?: Move) {
   const success = board.value.setPositionAndLastMove(fen, lastMove);
   if (!success) {
     alert("Forbidden as game is in progress !");
-  }
-  else {
+  } else {
     currentPosition.value = board.value.getCurrentPosition();
   }
 }
@@ -68,8 +67,7 @@ function tryToSetStartPosition() {
   const success = board.value.setStartPosition();
   if (!success) {
     alert("Forbidden as game is in progress !");
-  }
-  else {
+  } else {
     currentPosition.value = board.value.getCurrentPosition();
   }
 }
@@ -102,8 +100,6 @@ function stopGame() {
     board.value.stop();
   }
 }
-
-onMounted(() => console.log(board.value));
 </script>
 
 <template>
