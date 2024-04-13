@@ -309,11 +309,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  computed,
-  onUpdated,
-} from "vue";
+import {Move, Cell} from "./types.ts";
+import { ref, computed, onUpdated } from "vue";
 
 import { Chess } from "chess.js";
 import BP from "./pieces/BP.vue";
@@ -370,16 +367,6 @@ import {
   DndPieceData,
   DndLocation,
 } from "./util/DragAndDrop.js";
-
-export interface Cell {
-  file: number;
-  rank: number;
-}
-
-export interface Move {
-  start: Cell;
-  end: Cell;
-}
 
 const emit = defineEmits<{
   checkmate: [byWhite: boolean];
@@ -1089,6 +1076,7 @@ function getCurrentPosition(): string {
 onUpdated(() => {
   updateLastMoveArrow();
   updatePlayerHuman();
+  updateWaitingForExternalMove();
 });
 
 defineExpose({

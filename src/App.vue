@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
+import { Move } from "./components/types.ts";
+
 interface HistoryNode {
   text: string;
   fen?: string;
   lastMove?: Move;
 }
 
-import { computed, ref } from "vue";
-import ChessboardVue, { Move } from "./components/ChessboardVue.vue";
+import ChessboardVue from "./components/ChessboardVue.vue";
 const board = ref<typeof ChessboardVue>();
 const reversed = ref<boolean>(false);
 const manualField = ref<HTMLInputElement>();

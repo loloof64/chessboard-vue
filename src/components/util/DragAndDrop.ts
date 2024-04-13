@@ -144,7 +144,7 @@ export function handleMouseUp(
   updateWaitingForExternalMove: () => void,
   waitingForExternalMove: boolean,
   playerHuman: boolean,
-  updatePlayerHuman: () => void,
+  updatePlayerHuman: () => void
 ) {
   if (!rootElement) return;
   if (!gameInProgress) return;
@@ -264,7 +264,7 @@ export function buildMoveObject(
   startRank: number,
   endFile: number,
   endRank: number,
-  promotion?: string,
+  promotion?: string
 ) {
   const startAlgebraic = cellAlgebraic(startFile, startRank);
   const endAlgebraic = cellAlgebraic(endFile, endRank);
