@@ -381,7 +381,8 @@ const emit = defineEmits<{
     moveSan: string,
     moveFan: string,
     resultingPosition: string,
-    move: Move
+    move: Move,
+    promotion?: string,
   ];
 }>();
 
@@ -665,7 +666,8 @@ function updateAndEmitLastMove(
   endFile: number,
   endRank: number,
   logicBeforeMove: Chess,
-  logicAfterMove: Chess
+  logicAfterMove: Chess,
+  promotion?: string,
 ) {
   lastMove.value = {
     start: {
@@ -702,7 +704,8 @@ function updateAndEmitLastMove(
         file: endFile,
         rank: endRank,
       },
-    }
+    },
+    promotion,
   );
 }
 
@@ -780,7 +783,8 @@ function commitPromotionMove(type: string) {
     endFile,
     endRank,
     logicBeforeMove,
-    logic
+    logic,
+    type,
   );
 
   updatePlayerHuman();
@@ -856,7 +860,8 @@ function playManualMove(
     endFile,
     endRank,
     logicBeforeMove,
-    logic
+    logic,
+    promotion,
   );
 
   handleGameEndedStatus();

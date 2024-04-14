@@ -236,6 +236,7 @@ export interface Cell {
 | moveFan           | The FAN notation of the move.                       | string  |
 | resultingPosition | The resulting position in Forsyth-Edwards Notation  | string  |
 | move              | The move definition.                                | Move    |
+| promotion         | The applied promotion (can be undefined).           | string? |
 
 ## For developers
 
