@@ -138,6 +138,31 @@ Returns the current position of the board, in the format [Forsyth-Edwards Notati
 
 This method does not take any parameter.
 
+### setLastBoardArrow
+
+Sets the last board arrow, it can even be when the game is in progress.
+
+This method does not return anything.
+
+The type `Move` is defined in the **Chessboard.vue** file (so can be imported too), and means the following :
+```javascript
+export interface Move {
+  start: Cell;
+  end: Cell;
+}
+```
+where `Cell` is also defined in the **Chessboard.vue** file and means the following :
+```javascript
+export interface Cell {
+  file: number,
+  rank: number,
+}
+```
+
+| Field name        |                       Purpose                       | Type    | Default     |
+|-------------------|:---------------------------------------------------:|---------|-------------|
+| move              | The coordinates of the last move arrow.             | Move    | Not defined |
+
 ### Events 
 
 #### checkmate
@@ -187,6 +212,21 @@ SAN is the [Standard Algebraic Notation](https://www.chessprogramming.org/Algebr
 FAN is the [Figurine Algebraic Notation](https://www.chessprogramming.org/Algebraic_Chess_Notation#Figurine_Algebraic_Notation_.28FAN.29).
 
 [Forsyth-Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) is explained there.
+
+The type `Move` is defined in the **Chessboard.vue** file (so can be imported too), and means the following :
+```javascript
+export interface Move {
+  start: Cell;
+  end: Cell;
+}
+```
+where `Cell` is also defined in the **Chessboard.vue** file and means the following :
+```javascript
+export interface Cell {
+  file: number,
+  rank: number,
+}
+```
 
 | Given field name  |                       Purpose                       | Type    |
 |-------------------|:---------------------------------------------------:|---------|

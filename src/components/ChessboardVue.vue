@@ -1073,6 +1073,12 @@ function getCurrentPosition(): string {
   return logic.fen();
 }
 
+function setLastMoveArrow(coordinates: Move) {
+  lastMove.value = coordinates;
+  updateLastMoveArrow();
+  update();
+}
+
 onUpdated(() => {
   updateLastMoveArrow();
   updatePlayerHuman();
@@ -1088,6 +1094,7 @@ defineExpose({
   setStartPosition,
   setPositionAndLastMove,
   getCurrentPosition,
+  setLastMoveArrow,
 });
 </script>
 
