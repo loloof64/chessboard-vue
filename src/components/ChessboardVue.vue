@@ -524,7 +524,7 @@ const gridTemplate = computed<string>(
   () =>
     `${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px / ${halfCellsSize.value}px repeat(8, ${cellsSize.value}px) ${halfCellsSize.value}px`
 );
-const halfThickness = computed(() => cellsSize.value * 0.08);
+const halfThickness = computed(() => cellsSize.value * 0.03);
 
 const rootElement = ref<HTMLElement | undefined>();
 
